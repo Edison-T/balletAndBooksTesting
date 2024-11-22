@@ -1,111 +1,94 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import Layout from '../../../components/Layout';
 
-import {Listbox, ListboxItem, ListboxSection, cn} from "@nextui-org/react";
-import {ListboxWrapper} from "../../../components/ListBox/ListboxWrapper";
-import {AddNoteIcon} from "../../../components/ListBox/AddNoteIcon.jsx";
-import {CopyDocumentIcon} from "../../../components/ListBox/CopyDocumentIcon.jsx";
-import {EditDocumentIcon} from "../../../components/ListBox/EditDocumentIcon.jsx";
-import {DeleteDocumentIcon} from "../../../components/ListBox/DeleteDocumentIcon.jsx";
-import {Button} from "@nextui-org/react";
-
-
-
 const CurriculumScreen = () => {
-  const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
-  const [isWeekOneOpen, setWeekOneOpen] = useState(false);
+  const [expandedWeek, setExpandedWeek] = useState(null);
 
-  const toggleWeekOne = () => {
-    setWeekOneOpen(!isWeekOneOpen);
+  const weeks = [
+    { id: 1, title: 'Week 1' },
+    { id: 2, title: 'Week 2' },
+    { id: 3, title: 'Week 3' },
+    { id: 4, title: 'Week 4' },
+    { id: 5, title: 'Week 5' },
+    { id: 6, title: 'Week 6' },
+  ];
+
+  const toggleWeek = (weekId) => {
+    setExpandedWeek(weekId === expandedWeek ? null : weekId);
   };
 
-  return (
-      <Layout>
-      <ListboxWrapper>
-      <Listbox variant="faded" aria-label="Listbox menu with sections" className=''>
-        <ListboxSection title="Week 1" className='text-black'>  
-          <ListboxItem
-            key="new"
-            description="Create a new file"
-            startContent={<AddNoteIcon className={iconClasses} />}
-          >
-            New file
-          </ListboxItem>
-          <ListboxItem
-            key="copy"
-            description="Copy the file link"
-            startContent={<CopyDocumentIcon className={iconClasses} />}
-          >
-            Copy link
-          </ListboxItem>
-          <ListboxItem
-            key="edit"
-            description="Allows you to edit the file"
-            startContent={<EditDocumentIcon className={iconClasses} />}
-          >
-            Edit file
-          </ListboxItem>
-        </ListboxSection> 
-        <ListboxSection title="Week 3">  
-          <ListboxItem
-            key="delete"
-            //className="text-danger"
-            description="Permanently delete the file"
-            startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-          >
-            Delete file
-          </ListboxItem>
-        </ListboxSection> 
-        <ListboxSection title="Week 3">  
-          <ListboxItem
-            key="delete"
-            //className="text-danger"
-            description="Permanently delete the file"
-            startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-          >
-            Delete file
-          </ListboxItem>
-        </ListboxSection> 
-      </Listbox>
+  const expandAll = () => {
+    setExpandedWeek('all');
+  };
 
-      <Listbox variant="faded" aria-label="Listbox menu with sections" className=''>
-        <ListboxSection title="Week 2" className=''>  
-          <ListboxItem
-            key="new"
-            description="Create a new file"
-            startContent={<AddNoteIcon className={iconClasses} />}
-          >
-            New file
-          </ListboxItem>
-          <ListboxItem
-            key="copy"
-            description="Copy the file link"
-            startContent={<CopyDocumentIcon className={iconClasses} />}
-          >
-            Copy link
-          </ListboxItem>
-          <ListboxItem
-            key="edit"
-            description="Allows you to edit the file"
-            startContent={<EditDocumentIcon className={iconClasses} />}
-          >
-            Edit file
-          </ListboxItem>
-        </ListboxSection> 
-        <ListboxSection title="Week 4">  
-          <ListboxItem
-            key="delete"
-            //className="text-danger"
-            description="Permanently delete the file"
-            startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-          >
-            Delete file
-          </ListboxItem>
-        </ListboxSection> 
-      </Listbox>
-    </ListboxWrapper>
-      </Layout>
+  const renderWeekContent = (weekId) => (
+    <div className="ml-4 mt-2 text-gray-600">
+      <p>This is the content for {weeks.find((week) => week.id === weekId)?.title}.</p>
+    </div>
+  );
+
+  return (
+    <Layout>
+      <div className="bg-white p-6">
+        <div className="flex flex-col md:flex-row">
+          {/* Left Section: Curriculum */}
+          <div className="w-full md:w-3/4">
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-bold">Curriculum</h1>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={expandAll}
+              >
+                Expand All
+              </button>
+            </div>
+            <p className="mb-4 text-gray-600">
+              This week is <span className="font-bold">week 3</span>.
+            </p>
+            <div className="border border-gray-200 rounded-md">
+              {weeks.map((week) => (
+                <div key={week.id} className="border-b last:border-b-0">
+                  <button
+                    onClick={() => toggleWeek(week.id)}
+                    className="w-full text-left px-4 py-3 text-lg font-medium text-black hover:bg-gray-100 focus:outline-none"
+                  >
+                    {week.title}
+                  </button>
+                  {(expandedWeek === week.id || expandedWeek === 'all') &&
+                    renderWeekContent(week.id)}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Section: Calendar */}
+          <div className="w-full md:w-1/4 mt-6 md:mt-0 md:pl-6">
+            <h2 className="text-lg font-bold mb-2">October 2024</h2>
+            <div className="grid grid-cols-7 gap-2 text-center">
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+                <div key={index} className="font-bold text-gray-500">
+                  {day}
+                </div>
+              ))}
+              {[...Array(31).keys()].map((day) => {
+                const currentDate = day + 1;
+                return (
+                  <div
+                    key={currentDate}
+                    className={`p-2 rounded ${
+                      currentDate === 30 ? 'bg-blue-500 text-white' : 'text-gray-700'
+                    }`}
+                  >
+                    {currentDate}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
